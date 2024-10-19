@@ -99,7 +99,7 @@ function PaymentStep({ setCurrentStep }) {
                 htmlFor="razorpay"
                 className="text-orange-500 font-semibold text-lg"
               >
-                Razorpay
+              Online Payment
               </label>
             </div>
           </div>

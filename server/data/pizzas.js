@@ -9,7 +9,7 @@ const pizzas = [
     price: 6.95,
     size: 'small',
     createdBy: 'admin', // Added this field
-    imageUrl: '/images/margherita.png',
+    imageUrl: 'https://bing.com/th?id=OSK.7f2204d1a54011ae729188f9a52ac992',
   },
   {
     name: 'Marinara',
@@ -21,7 +21,7 @@ const pizzas = [
     price: 6.95,
     size: 'small',
     createdBy: 'admin', // Added this field
-    imageUrl: '/images/marinara.png',
+    imageUrl: 'https://th.bing.com/th/id/OIP.KCM1cIhCG5VJlAJgH8OzqgHaFj?rs=1&pid=ImgDetMain',
   },
   {
     name: 'Quattro Formaggi',
@@ -33,7 +33,7 @@ const pizzas = [
     price: 8.95,
     size: 'small',
     createdBy: 'admin', // Added this field
-    imageUrl: '/images/quattro-formaggi.png',
+    imageUrl: 'https://th.bing.com/th/id/OIP.RtuUawrVr4nKa6ZUfAfeVQHaEc?w=1000&h=600&rs=1&pid=ImgDetMain',
   },
   {
     name: 'Carbonara',
@@ -45,7 +45,7 @@ const pizzas = [
     price: 8.95,
     size: 'small',
     createdBy: 'admin', // Added this field
-    imageUrl: '/images/carbonara.png',
+    imageUrl: 'https://bing.com/th?id=OSK.15716608a00e486f2d576753336df585',
   },
 ];
 
