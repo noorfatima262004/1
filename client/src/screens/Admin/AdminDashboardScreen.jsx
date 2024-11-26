@@ -38,7 +38,12 @@ function AdminDashboardScreen() {
   const dispatch = useDispatch();
 
   const { userInfo } = useSelector((state) => state.user);
-  const { adminUserInfo } = useSelector((state) => state.admin);
+  const { adminUserInfo, isAdminLoading } = useSelector((state) => state.admin);
+
+  // Conditionally filter the menuItems based on the user's role
+  const filteredMenuItems = adminUserInfo && adminUserInfo.role === 'admin'
+    ? menuItems
+    : menuItems.filter(item => item.name !== 'Staff' && item.name !== 'Users');
 
   const toggleSidebar = () => {
     setCollapsible((prevState) => !prevState);
@@ -50,11 +55,13 @@ function AdminDashboardScreen() {
   };
 
   useEffect(() => {
+    if (isAdminLoading) return; // If admin data is still loading, prevent further action
+
     if (!adminUserInfo) {
       navigate('/admin/login');
     } else if (!adminUserInfo.isApproved) {
-      // Admin is not approved
-      return; // Early return to avoid fetching data
+      // Admin is not approved, no action needed
+      return;
     } else {
       // Fetch admin-specific data when adminUserInfo exists and is approved
       dispatch(listUsers({}));
@@ -63,7 +70,7 @@ function AdminDashboardScreen() {
       dispatch(listOrders({}));
       dispatch(listInventory({}));
     }
-  }, [dispatch, navigate, adminUserInfo]);
+  }, [dispatch, navigate, adminUserInfo, isAdminLoading]);
 
   useEffect(() => {
     // Redirect to homepage if a regular user is logged in
@@ -72,13 +79,17 @@ function AdminDashboardScreen() {
     }
   }, [navigate, userInfo, adminUserInfo]);
 
+  if (isAdminLoading) {
+    return <div>Loading...</div>; // Show a loading indicator while the data is being fetched
+  }
+
   return (
     <section className="min-h-screen flex flex-row bg-orange-600 text-white pt-16 sm:pt-20">
       {adminUserInfo && adminUserInfo.isApproved ? (
         <>
           {collapsible && (
             <SideBar
-              menuItems={menuItems}
+              menuItems={filteredMenuItems} // Use filtered menu items based on role
               handleMenuItemClick={handleMenuItemClick}
               activeMenuItem={activeMenuItem}
               collapsible={collapsible}
@@ -86,7 +97,7 @@ function AdminDashboardScreen() {
           )}
 
           <MainContent
-            menuItems={menuItems}
+            menuItems={filteredMenuItems} // Pass filtered menu items
             activeMenuItem={activeMenuItem}
             collapsible={collapsible}
             onToggleSidebar={toggleSidebar}

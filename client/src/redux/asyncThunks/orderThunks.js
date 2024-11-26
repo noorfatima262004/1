@@ -1,3 +1,4 @@
+
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -19,6 +20,10 @@ export const createOrder = createAsyncThunk(
         },
       };
 
+      // Log the orderData before sending it to the backend
+      console.log('Order Data Sent to Backend:', orderData.payment);
+
+
       const { data } = await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/api/orders`,
         {
@@ -31,16 +36,20 @@ export const createOrder = createAsyncThunk(
         },
         config
       );
+      
+      console.log('Order Data Sent to Backend:', orderData);
 
       return data;
-    } catch (error) {
-      return rejectWithValue({
-        status: error.response && error.response.status,
-        message:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
-      });
+    }catch (error) {
+    console.error("Error placing order:", error.response.data || error.message);
+    // } catch (error) {
+    //   return rejectWithValue({
+    //     status: error.response && error.response.status,
+    //     message:
+    //       error.response && error.response.data.message
+    //         ? error.response.data.message
+    //         : error.message,
+    //   });
     }
   }
 );

@@ -1,4 +1,5 @@
 const express = require('express');
+const Stripe = require('stripe');
 
 // Initialize Express Router
 const router = express.Router();
@@ -9,7 +10,7 @@ const { protect, admin } = require('../middlewares/authMiddlewares');
 // Import Controllers
 const {
   createOrder,
-  createRazorpayOrder,
+  createStripePaymentIntent,
   getOrdersByUserId,
   getAllOrders,
   getOrderById,
@@ -24,7 +25,7 @@ const {
 // Private Routes
 router.route('/').post(protect, createOrder);
 router.route('/user').get(protect, getOrdersByUserId);
-router.route('/checkout').post(protect, createRazorpayOrder);
+router.route('/checkout').post(protect, createStripePaymentIntent);
 
 // Admin + Private Routes
 router.route('/').get(protect, admin, getAllOrders);

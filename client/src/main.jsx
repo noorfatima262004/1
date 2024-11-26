@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Elements } from '@stripe/react-stripe-js'; // Import Elements
+import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
 
 // Import App
 import App from './App.jsx';
@@ -22,6 +24,11 @@ import UserCreateCustomPizzaScreen from './screens/User/UserCreateCustomPizzaScr
 import UserLoginScreen from './screens/User/UserLoginScreen.jsx';
 import UserOrdersScreen from './screens/User/UserOrdersScreen.jsx';
 import UserRegisterScreen from './screens/User/UserRegisterScreen.jsx';
+
+// Initialize Stripe
+// const stripePromise = loadStripe('your-publishable-key-here'); // Replace with your Stripe publishable key
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_KEY_ID);
+
 
 // Create Router
 const router = createBrowserRouter([
@@ -45,7 +52,6 @@ const router = createBrowserRouter([
         path: '/forget-pwd',
         element: <ForgetPasswordScreen />,
       },
-
       {
         path: '/profile',
         element: <ProfileScreen />,
@@ -86,11 +92,13 @@ const router = createBrowserRouter([
   },
 ]);
 
-// Render App
+// Render App with Elements provider for Stripe
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <Elements stripe={stripePromise}> {/* Wrap everything with Elements */}
+        <RouterProvider router={router} />
+      </Elements>
     </Provider>
   </React.StrictMode>
 );

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // Import Actions
 import {
-  createRazorPayOrder,
+  createStripePaymentIntent,
   savePaymentMethod,
 } from '../../../redux/slices/cartSlice';
 
@@ -20,13 +20,11 @@ function PaymentStep({ setCurrentStep }) {
   const {
     shippingAddress,
     cartItems,
-    orderGetRazorPayOrderDetails,
-    orderGetRazorPayOrderIdError,
-    orderGetRazorPayOrderIdSuccess,
+    orderGetStripePaymentIntentDetails, // Access the correct field
+    orderGetStripePaymentIntentError,
+    orderGetStripePaymentIntentSuccess,
   } = cart;
-
-  const order = useSelector((state) => state.order);
-  const { loading } = order;
+  
 
   const [paymentMethod, setPaymentMethod] = useState(cart.paymentMethod || '');
 
@@ -39,6 +37,7 @@ function PaymentStep({ setCurrentStep }) {
   const submitHandler = (e) => {
     e.preventDefault();
 
+    // Calculate the total amount
     const amount =
       cartItems &&
       Math.round(
@@ -56,19 +55,26 @@ function PaymentStep({ setCurrentStep }) {
         ).toFixed(2)
       );
 
+    // Save payment method to state
     dispatch(savePaymentMethod(paymentMethod));
-    dispatch(createRazorPayOrder({ amount, currency: 'USD' }));
+
+    // Create Stripe Payment Intent
+    dispatch(createStripePaymentIntent({ amount, currency: 'USD' }));
   };
 
   useEffect(() => {
-    if (orderGetRazorPayOrderIdSuccess && orderGetRazorPayOrderDetails) {
+    // Proceed to the next step if the payment intent is successfully created
+    if (orderGetStripePaymentIntentDetails && orderGetStripePaymentIntentSuccess) {
       setCurrentStep('Place Order');
     }
-  }, [
-    orderGetRazorPayOrderIdSuccess,
-    orderGetRazorPayOrderDetails,
-    setCurrentStep,
-  ]);
+  }, [orderGetStripePaymentIntentSuccess, orderGetStripePaymentIntentDetails, setCurrentStep]);
+
+  // useEffect(() => {
+  //   if (orderGetRazorPayOrderIdSuccess && orderGetRazorPayOrderDetails) {
+  //     setCurrentStep('Place Order');
+  //   }
+  // }, [orderGetRazorPayOrderIdSuccess,orderGetRazorPayOrderDetails,setCurrentStep,]);
+
   return (
     <form onSubmit={submitHandler} className="w-full p-4">
       <p className="text-center text-black text-xl leading-relaxed">
@@ -76,30 +82,28 @@ function PaymentStep({ setCurrentStep }) {
         <br />
         <span className="text-sm text-orange-500">Select Payment Method</span>
       </p>
-      {loading ? (
-        <Loader />
-      ) : cartItems && cartItems.length > 0 ? (
+      {cartItems && cartItems.length > 0 ? (
         <>
-          {orderGetRazorPayOrderIdError && (
-            <Message>{orderGetRazorPayOrderIdError}</Message>
+          {orderGetStripePaymentIntentError && (
+            <Message>{orderGetStripePaymentIntentError}</Message>
           )}
           <div className="flex flex-col items-center justify-center mt-4">
             <div className="flex items-center justify-center">
               <input
                 type="radio"
-                id="razorpay"
-                value="Razorpay"
+                id="stripe"
+                value="Stripe"
                 name="paymentMethod"
                 required
-                checked={paymentMethod === 'Razorpay'}
+                checked={paymentMethod === 'Stripe'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="mr-2"
               />
               <label
-                htmlFor="razorpay"
+                htmlFor="stripe"
                 className="text-orange-500 font-semibold text-lg"
               >
-              Online Payment
+                Online Payment
               </label>
             </div>
           </div>

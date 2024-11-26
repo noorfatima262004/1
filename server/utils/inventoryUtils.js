@@ -1,9 +1,8 @@
 // Import Schema
 const { Base, Sauce, Cheese, Veggie } = require('../schemas/inventorySchema');
 
-// Update inventory quantity for a given item
 const updateInventoryQuantity = async (pizza, qty) => {
-  const { bases, sauces, cheeses, veggies } = pizza;
+  const { bases = [], sauces = [], cheeses = [], veggies = [] } = pizza;
 
   const updateQuantity = async (item) => {
     if (item) {
@@ -22,27 +21,29 @@ const updateInventoryQuantity = async (pizza, qty) => {
   };
 
   // Update base quantity
-  for (const baseId of bases) {
+  for (const baseId of bases.filter(Boolean)) {
     const baseItem = await Base.findById(baseId);
     await updateQuantity(baseItem);
   }
 
   // Update sauce quantity
-  for (const sauceId of sauces) {
+  for (const sauceId of sauces.filter(Boolean)) {
     const sauceItem = await Sauce.findById(sauceId);
     await updateQuantity(sauceItem);
   }
 
   // Update cheese quantity
-  for (const cheeseId of cheeses) {
+  for (const cheeseId of cheeses.filter(Boolean)) {
     const cheeseItem = await Cheese.findById(cheeseId);
     await updateQuantity(cheeseItem);
   }
+
   // Update veggie quantity
-  for (const veggieId of veggies) {
+  for (const veggieId of veggies.filter(Boolean)) {
     const veggieItem = await Veggie.findById(veggieId);
     await updateQuantity(veggieItem);
   }
 };
+
 
 module.exports = { updateInventoryQuantity };

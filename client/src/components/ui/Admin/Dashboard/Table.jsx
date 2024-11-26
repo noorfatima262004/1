@@ -35,6 +35,7 @@ function Table({ data, columns, handleDelete, handleChange }) {
                     className="border border-orange-500 px-4 py-2 sm:px-2 sm:py-1"
                   >
                     {column === 'numberOfOrders' ? (
+                      // row.orders.length
                       row.orders.length
                     ) : column === 'isApproved' ? (
                       <input

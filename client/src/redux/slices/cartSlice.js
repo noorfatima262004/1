@@ -20,26 +20,22 @@ export const addToCart = createAsyncThunk(
       };
     } catch (error) {
       return rejectWithValue({
-        status: error.response && error.response.status,
-        message:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
       });
     }
   }
 );
 
-// Create RazorPay Order
-export const createRazorPayOrder = createAsyncThunk(
-  'cart/createRazorPayOrder',
+// Create Stripe PaymentIntent
+export const createStripePaymentIntent = createAsyncThunk(
+  'cart/createStripePaymentIntent',
   async ({ amount, currency }, { rejectWithValue, getState }) => {
     try {
       const {
         user: { userInfo },
       } = getState();
-      console.log("userInfo",userInfo);
-      
+
       const config = {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
@@ -52,15 +48,11 @@ export const createRazorPayOrder = createAsyncThunk(
         config
       );
 
-      return data;
+      return data; // Contains the `client_secret` from Stripe
     } catch (error) {
-      console.log("error",error);
       return rejectWithValue({
-        status: error.response && error.response.status,
-        message:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
       });
     }
   }
@@ -68,29 +60,23 @@ export const createRazorPayOrder = createAsyncThunk(
 
 // Initial State
 const initialState = {
-  cartItems: localStorage.getItem('cartItems')
-    ? JSON.parse(localStorage.getItem('cartItems'))
-    : [],
-  shippingAddress: localStorage.getItem('shippingAddress')
-    ? JSON.parse(localStorage.getItem('shippingAddress'))
-    : {},
-  paymentMethod: localStorage.getItem('paymentMethod')
-    ? JSON.parse(localStorage.getItem('paymentMethod'))
-    : {},
-  orderRazorPayPaymentDetails: {},
-  orderGetRazorPayOrderDetails: {},
+  cartItems: JSON.parse(localStorage.getItem('cartItems')) || [],
+  shippingAddress: JSON.parse(localStorage.getItem('shippingAddress')) || {},
+  paymentMethod: JSON.parse(localStorage.getItem('paymentMethod')) || {},
+  orderStripePaymentDetails: {},
+  orderGetStripePaymentIntentDetails: {},
   cartAddItemError: null,
   cartRemoveItemError: null,
   cartSaveShippingAddressError: null,
   cartSavePaymentMethodError: null,
-  orderGetRazorPayOrderIdError: null,
-  orderRazorPayPaymentError: null,
+  orderGetStripePaymentIntentError: null,
+  orderStripePaymentError: null,
   cartAddItemSuccess: false,
   cartRemoveItemSuccess: false,
   cartSaveShippingAddressSuccess: false,
   cartSavePaymentMethodSuccess: false,
-  orderGetRazorPayOrderIdSuccess: false,
-  orderRazorPayPaymentSuccess: false,
+  orderGetStripePaymentIntentSuccess: false,
+  orderStripePaymentSuccess: false,
   loading: false,
 };
 
@@ -107,20 +93,14 @@ const cartSlice = createSlice({
     },
     saveShippingAddress(state, action) {
       state.shippingAddress = action.payload;
-      localStorage.setItem(
-        'shippingAddress',
-        JSON.stringify(state.shippingAddress)
-      );
+      localStorage.setItem('shippingAddress', JSON.stringify(state.shippingAddress));
     },
     savePaymentMethod(state, action) {
       state.paymentMethod = action.payload;
-      localStorage.setItem(
-        'paymentMethod',
-        JSON.stringify(state.paymentMethod)
-      );
+      localStorage.setItem('paymentMethod', JSON.stringify(state.paymentMethod));
     },
-    setRazorPayPaymentDetails(state, action) {
-      state.orderRazorPayPaymentDetails = action.payload;
+    setStripePaymentDetails(state, action) {
+      state.orderStripePaymentDetails = action.payload;
     },
     clearCartData(state) {
       state.cartItems = [];
@@ -129,20 +109,20 @@ const cartSlice = createSlice({
       localStorage.removeItem('cartItems');
       localStorage.removeItem('shippingAddress');
       localStorage.removeItem('paymentMethod');
-      state.orderRazorPayPaymentDetails = {};
-      state.orderGetRazorPayOrderDetails = {};
+      state.orderStripePaymentDetails = {};
+      state.orderGetStripePaymentIntentDetails = {};
       state.cartAddItemError = null;
       state.cartRemoveItemError = null;
       state.cartSaveShippingAddressError = null;
       state.cartSavePaymentMethodError = null;
-      state.orderGetRazorPayOrderIdError = null;
-      state.orderRazorPayPaymentError = null;
+      state.orderGetStripePaymentIntentError = null;
+      state.orderStripePaymentError = null;
       state.cartAddItemSuccess = false;
       state.cartRemoveItemSuccess = false;
       state.cartSaveShippingAddressSuccess = false;
       state.cartSavePaymentMethodSuccess = false;
-      state.orderGetRazorPayOrderIdSuccess = false;
-      state.orderRazorPayPaymentSuccess = false;
+      state.orderGetStripePaymentIntentSuccess = false;
+      state.orderStripePaymentSuccess = false;
       state.loading = false;
     },
   },
@@ -169,21 +149,21 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;
-        state.cartAddItemError = action.payload.message;
+        state.cartAddItemError = action.payload?.message;
       })
-      .addCase(createRazorPayOrder.pending, (state) => {
+      .addCase(createStripePaymentIntent.pending, (state) => {
         state.loading = true;
-        state.orderGetRazorPayOrderIdSuccess = false;
-        state.orderGetRazorPayOrderIdError = null;
+        state.orderGetStripePaymentIntentSuccess = false;
+        state.orderGetStripePaymentIntentError = null;
       })
-      .addCase(createRazorPayOrder.fulfilled, (state, action) => {
+      .addCase(createStripePaymentIntent.fulfilled, (state, action) => {
         state.loading = false;
-        state.orderGetRazorPayOrderIdSuccess = true;
-        state.orderGetRazorPayOrderDetails = action.payload;
+        state.orderGetStripePaymentIntentSuccess = true;
+        state.orderGetStripePaymentIntentDetails = action.payload;
       })
-      .addCase(createRazorPayOrder.rejected, (state, action) => {
+      .addCase(createStripePaymentIntent.rejected, (state, action) => {
         state.loading = false;
-        state.orderGetRazorPayOrderIdError = action.payload;
+        state.orderGetStripePaymentIntentError = action.payload;
       });
   },
 });
@@ -191,7 +171,7 @@ const cartSlice = createSlice({
 // Export Actions
 export const {
   clearCartData,
-  setRazorPayPaymentDetails,
+  setStripePaymentDetails,
   removeFromCart,
   saveShippingAddress,
   savePaymentMethod,

@@ -1,4 +1,5 @@
 // Import required packages
+const Stripe = require('stripe');
 const colors = require('colors');
 const cors = require('cors');
 const dotenv = require('dotenv');
