@@ -190,7 +190,7 @@ const updatePizzaById = asyncHandler(async (req, res) => {
         _id: updatedPizza._id,
         name: updatedPizza.name,
         description: updatedPizza.description,
-        base: updatedPizza.base,
+        base: updatedPizza.bases,
         sauces: updatedPizza.sauces,
         cheeses: updatedPizza.cheeses,
         veggies: updatedPizza.veggies,

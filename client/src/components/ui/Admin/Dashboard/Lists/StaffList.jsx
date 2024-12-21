@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 // Import Thunks
 import {
@@ -39,7 +41,6 @@ function StaffList() {
   const handleDelete = (id) => {
     dispatch(deleteAdminUserById(id)).then(() => {
       dispatch(listAdminUsers({}));
-      // Clear messages after action
       clearMessages();
     });
   };
@@ -48,10 +49,9 @@ function StaffList() {
     const user = adminUserList.find((user) => user._id === _id);
     if (!user) {
       console.log("User not found for ID:", _id);
-      return; // Exit if user is not found
+      return;
     }
 
-    // Toggle isApproved
     const updatedUser = {
       id: user._id,
       name: user.name,
@@ -63,11 +63,8 @@ function StaffList() {
 
     dispatch(updateAdminUserById(updatedUser)).then(() => {
       dispatch(listAdminUsers({}));
-      // Clear messages after action
       clearMessages();
     });
-
-    console.log("handleChange _id", _id, "New isApproved:", updatedUser.isApproved); 
   };
 
   const successMessage = adminUserUpdateProfileByIdSuccess
@@ -77,16 +74,10 @@ function StaffList() {
     : null;
 
   const getErrorMessage = () => {
-    if (adminUserListError) {
-      return adminUserListError; // Return list error
-    }
-    if (adminUserDeleteByIdError) {
-      return adminUserDeleteByIdError; // Return delete error
-    }
-    if (adminUserUpdateProfileByIdError) {
-      return adminUserUpdateProfileByIdError; // Return update error
-    }
-    return null; // No error
+    if (adminUserListError) return adminUserListError;
+    if (adminUserDeleteByIdError) return adminUserDeleteByIdError;
+    if (adminUserUpdateProfileByIdError) return adminUserUpdateProfileByIdError;
+    return null;
   };
 
   const errorMessage = getErrorMessage();
@@ -97,11 +88,48 @@ function StaffList() {
     }
   }, [dispatch, loading, adminUserList]);
 
-  // Function to clear messages
   const clearMessages = () => {
-    // Dispatch actions to clear success/error messages in the Redux store
-    // This will depend on how you set up your Redux state management
+    // Clear success/error messages from the Redux store
   };
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(18);
+    doc.text("Staff List Report", 14, 22);
+  
+    const tableColumns = ['ID', 'Name', 'Email', 'Role', 'Approved'];
+    const tableRows = adminUserList.map((user) => [
+      user._id,
+      user.name,
+      user.email,
+      user.role,
+      user.isApproved ? 'Yes' : 'No',
+    ]);
+  
+    // Define custom column widths
+    const columnWidths = [58, 30, 55, 22, 25]; // Array with custom widths for each column
+  
+    doc.autoTable({
+      head: [tableColumns],
+      body: tableRows,
+      startY: 30, // Start the table after the title
+      theme: 'striped',
+      styles: {
+        fontSize: 12,
+      },
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] }, // Width for ID column
+        1: { cellWidth: columnWidths[1] }, // Width for Name column
+        2: { cellWidth: columnWidths[2] }, // Width for Email column
+        3: { cellWidth: columnWidths[3] }, // Width for Role column
+        4: { cellWidth: columnWidths[4] }, // Width for Permissions column
+      },
+    });
+  
+    doc.save("staff_list_report.pdf"); // Download the PDF
+  };
+  
 
   return (
     <div className="w-full p-4">
@@ -110,18 +138,18 @@ function StaffList() {
         <Loader />
       ) : (
         <>
-          {errorMessage && (
-            <Message>
-              {errorMessage}
-            </Message>
-          )}
-          {/* {successMessage && (
-            <Message>
-              {successMessage}
-            </Message>
-          )} */}
+          {errorMessage && <Message>{errorMessage}</Message>}
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={generatePDF}
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+            >
+              Generate PDF Report
+            </button>
+          </div>
           <div className="mt-4">
             {adminUserList.length > 0 ? (
+              console.log(adminUserList),
               <Table
                 data={adminUserList}
                 columns={adminUserColumns}

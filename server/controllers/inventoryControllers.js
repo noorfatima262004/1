@@ -51,7 +51,9 @@ const getStockById = asyncHandler(async (req, res) => {
 // @access  Admin
 
 const createStock = asyncHandler(async (req, res) => {
+  console.log("out", req.body.type);
   if (req.body.type === 'Base') {
+    console.log(req.body.type);
     const { item, price, quantity, threshold } = req.body;
 
     if (!item || !price || !quantity || !threshold) {
