@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 // Import Thunks
-import { listInventory } from '../../../../../redux/asyncThunks/inventoryThunks';
+import { deleteStockById, listInventory, updateStockById } from '../../../../../redux/asyncThunks/inventoryThunks';
 
 // Import Components
 import Loader from '../../../Loader';
@@ -87,10 +87,25 @@ function InventoryList() {
     };
   }, [inventoryList]);
 
+
+    const handleDelete = (id) => {
+      dispatch(deleteStockById(id)).then(() => dispatch(listInventory({})));
+    };
+
+    const handleUpdate = (id, selectedStatus) => {
+        dispatch(
+          updateStockById({
+            id,
+            status: selectedStatus,
+          })
+        ).then(() => dispatch(listInventory({})));
+      };
+    
+
   // Function to generate PDF report
   const generatePDF = () => {
     const doc = new jsPDF();
-    
+
     // Add title
     doc.setFontSize(18);
     doc.text('Inventory Report', 20, 20);
@@ -170,9 +185,10 @@ function InventoryList() {
                     <Table
                       data={inventoryList[category]}
                       columns={inventoryColumns}
-                      handleDelete={() => {}}
-                      handleChange={() => {}}
+                      handleDelete={handleDelete}
+                      handleChange={handleUpdate}
                     />
+
                   </div>
                 ))}
 

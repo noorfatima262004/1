@@ -51,7 +51,6 @@ const getStockById = asyncHandler(async (req, res) => {
 // @access  Admin
 
 const createStock = asyncHandler(async (req, res) => {
-  console.log("out", req.body.type);
   if (req.body.type === 'Base') {
     console.log(req.body.type);
     const { item, price, quantity, threshold } = req.body;
@@ -60,10 +59,10 @@ const createStock = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error('Please Fill All Fields!');
     } else {
-      if (quantity < threshold) {
-        res.status(400);
-        throw new Error('Quantity Cannot be less than Threshold!');
-      } else {
+      // if (quantity < threshold) {
+      //   res.status(400);
+      //   throw new Error('Quantity Cannot be less than Threshold!');
+      // } else {
         const base = new Base({
           item: req.body.item,
           price: req.body.price,
@@ -73,7 +72,7 @@ const createStock = asyncHandler(async (req, res) => {
 
         const createdBase = await base.save();
         res.status(201).json(createdBase);
-      }
+      
     }
   } else if (req.body.type === 'Sauce') {
     const { item, price, quantity, threshold } = req.body;
@@ -82,10 +81,10 @@ const createStock = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error('Please Fill All Fields!');
     } else {
-      if (quantity < threshold) {
-        res.status(400);
-        throw new Error('Quantity Cannot be less than Threshold!');
-      } else {
+      // if (quantity < threshold) {
+      //   res.status(400);
+      //   throw new Error('Quantity Cannot be less than Threshold!');
+      // } else {
         const sauce = new Sauce({
           item: req.body.item,
           price: req.body.price,
@@ -95,7 +94,7 @@ const createStock = asyncHandler(async (req, res) => {
 
         const createdSauce = await sauce.save();
         res.status(201).json(createdSauce);
-      }
+      // }
     }
   } else if (req.body.type === 'Cheese') {
     const { item, price, quantity, threshold } = req.body;
@@ -104,10 +103,10 @@ const createStock = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error('Please Fill All Fields!');
     } else {
-      if (quantity < threshold) {
-        res.status(400);
-        throw new Error('Quantity Cannot be less than Threshold!');
-      } else {
+      // if (quantity < threshold) {
+      //   res.status(400);
+      //   throw new Error('Quantity Cannot be less than Threshold!');
+      // } else {
         const cheese = new Cheese({
           item: req.body.item,
           price: req.body.price,
@@ -117,7 +116,7 @@ const createStock = asyncHandler(async (req, res) => {
 
         const createdCheese = await cheese.save();
         res.status(201).json(createdCheese);
-      }
+      // }
     }
   } else if (req.body.type === 'Veggie') {
     const { item, price, quantity, threshold } = req.body;
@@ -126,10 +125,10 @@ const createStock = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error('Please Fill All Fields!');
     } else {
-      if (quantity < threshold) {
-        res.status(400);
-        throw new Error('Quantity Cannot be less than Threshold!');
-      } else {
+      // if (quantity < threshold) {
+      //   res.status(400);
+      //   throw new Error('Quantity Cannot be less than Threshold!');
+      // } else {
         const veggie = new Veggie({
           item: req.body.item,
           price: req.body.price,
@@ -139,7 +138,7 @@ const createStock = asyncHandler(async (req, res) => {
 
         const createdVeggie = await veggie.save();
         res.status(201).json(createdVeggie);
-      }
+      // }
     }
   } else {
     res.status(404);
