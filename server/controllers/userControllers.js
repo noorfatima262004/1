@@ -169,7 +169,7 @@ const verifyUser = asyncHandler(async (req, res) => {
 
       // Update user verification status
       user.isVerified = true;
-      user.verificationCode = '';
+      // user.verificationCode = '';
 
       const verifiedUser = await user.save();
 

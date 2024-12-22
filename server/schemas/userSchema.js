@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema(
 
     verificationCode: {
       type: String, // Removed unique: true
+      // unique: true,
+      sparse: true, // Allows the field to be empty (null or undefined)
+
     },
 
     // Password Reset
